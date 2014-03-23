@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
-use strictures 1;
+use strict;
+use warnings;
 use Test::More 0.88;
 
 use Devel::OverloadInfo qw(overload_info);
@@ -9,7 +10,8 @@ sub MyModule::negate { -$_[0] }
 my $num_sub;
 BEGIN { $num_sub = sub { 0 } };
 {
-    package BaseClass;
+    package  # hide from PAUSE
+        BaseClass;
     use overload (
         '""' => 'stringify',
         bool => 'boolify',
@@ -20,7 +22,8 @@ BEGIN { $num_sub = sub { 0 } };
 }
 
 {
-    package ChildClass;
+    package # hide from PAUSE
+        ChildClass;
     use parent -norequire => 'BaseClass';
 
     use overload (
