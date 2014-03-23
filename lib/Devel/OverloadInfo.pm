@@ -5,8 +5,7 @@ use overload ();
 use Scalar::Util qw(blessed);
 use Sub::Identify qw(sub_fullname);
 use Package::Stash;
-use if $] < 5.009005, 'MRO::Compat';
-use if $] >= 5.009005, 'mro';
+use MRO::Compat;
 
 use Exporter qw(import);
 our @EXPORT_OK = qw(overload_info);
