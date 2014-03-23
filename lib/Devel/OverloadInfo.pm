@@ -1,6 +1,7 @@
 package Devel::OverloadInfo;
 
-use strictures 1;
+use strict;
+use warnings;
 use overload ();
 use Scalar::Util qw(blessed);
 use Sub::Identify qw(sub_fullname);
