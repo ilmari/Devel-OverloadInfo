@@ -35,7 +35,7 @@ sub stash_with_symbol {
 
 =func overload_info
 
-    my $info = overload_info($class_or_object)
+    my $info = overload_info($class_or_object);
 
 Returns a hash reference with information about all the overloaded
 operators of the argument, which can be either a class name or a blessed
