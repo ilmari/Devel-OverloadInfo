@@ -19,7 +19,7 @@ use Sub::Identify qw(sub_fullname);
 use Package::Stash 0.14;
 use MRO::Compat;
 
-use Exporter qw(import);
+use Exporter 5.57 qw(import);
 our @EXPORT_OK = qw(overload_info);
 
 sub stash_with_symbol {
