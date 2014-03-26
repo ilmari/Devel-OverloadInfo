@@ -16,7 +16,7 @@ use warnings;
 use overload ();
 use Scalar::Util qw(blessed);
 use Sub::Identify qw(sub_fullname);
-use Package::Stash;
+use Package::Stash 0.14;
 use MRO::Compat;
 
 use Exporter qw(import);
