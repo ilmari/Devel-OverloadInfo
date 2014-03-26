@@ -1,6 +1,8 @@
 Revision history for Devel-OverloadInfo
 
 {{$NEXT}}
+
+0.002     2014-03-26 12:02:38+00:00 Europe/London
   - Specify minimum required versions of Package::Stash and Exporter
 
 0.001     2014-03-23 18:41:17+00:00 Europe/London
