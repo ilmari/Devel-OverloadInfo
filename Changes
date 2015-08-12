@@ -2,6 +2,7 @@ Revision history for Devel-OverloadInfo
 
 {{$NEXT}}
   - Return an empty hash instead of undef for classes with no overloads
+  - Work around overload inheritance corruption before 5.16 (RT#106379)
 
 0.002     2014-03-26 12:02:38+00:00 Europe/London
   - Specify minimum required versions of Package::Stash and Exporter

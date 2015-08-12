@@ -79,7 +79,12 @@ For the special C<fallback> key, the value it was given in C<class>.
 sub overload_info {
     my $class = blessed($_[0]) || $_[0];
 
-    return {} unless overload::Overloaded($class);
+    # Perl before 5.16 seems to corrupt inherited overload info if
+    # there's a lone dereference overload and overload::Overloaded()
+    # is called before any object has been blessed into the class.
+    return {} unless "$]" >= 5.016
+        ? overload::Overloaded($class)
+        : stash_with_symbol($class, '&()');
 
     my (%overloaded);
     for my $op (map split(/\s+/), values %overload::ops) {
