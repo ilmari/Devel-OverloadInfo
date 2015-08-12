@@ -79,7 +79,7 @@ For the special C<fallback> key, the value it was given in C<class>.
 sub overload_info {
     my $class = blessed($_[0]) || $_[0];
 
-    return undef unless overload::Overloaded($class);
+    return {} unless overload::Overloaded($class);
 
     my (%overloaded);
     for my $op (map split(/\s+/), values %overload::ops) {
