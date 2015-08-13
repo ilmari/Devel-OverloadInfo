@@ -20,7 +20,7 @@ use Package::Stash 0.14;
 use MRO::Compat;
 
 use Exporter 5.57 qw(import);
-our @EXPORT_OK = qw(overload_info);
+our @EXPORT_OK = qw(overload_info is_overloaded);
 
 sub stash_with_symbol {
     my ($class, $symbol) = @_;
@@ -31,6 +31,33 @@ sub stash_with_symbol {
         return ($stash, $value_ref) if $value_ref;
     }
     return;
+}
+
+=func is_overloaded
+
+   if (is_overloaded($class_or_object)) { ... }
+
+Returns a boolean indicating whether the given class or object has any
+overloading declared.  Note that a bare C<use overload;> with no
+actual operators counts as being overloaded.
+
+Equivalent to
+L<overload::Overloaded()|overload/overload::Overloaded(arg)>, but
+doesn't trigger various bugs associated with it in versions of perl
+before 5.16.
+
+=cut
+
+sub is_overloaded {
+    my $class = blessed($_[0]) || $_[0];
+
+    # Perl before 5.16 seems to corrupt inherited overload info if
+    # there's a lone dereference overload and overload::Overloaded()
+    # is called before any object has been blessed into the class.
+    return !!("$]" >= 5.016
+        ? overload::Overloaded($class)
+        : stash_with_symbol($class, '&()')
+    );
 }
 
 =func overload_info
@@ -79,12 +106,7 @@ For the special C<fallback> key, the value it was given in C<class>.
 sub overload_info {
     my $class = blessed($_[0]) || $_[0];
 
-    # Perl before 5.16 seems to corrupt inherited overload info if
-    # there's a lone dereference overload and overload::Overloaded()
-    # is called before any object has been blessed into the class.
-    return {} unless "$]" >= 5.016
-        ? overload::Overloaded($class)
-        : stash_with_symbol($class, '&()');
+    return {} unless is_overloaded($class);
 
     my (%overloaded);
     for my $op (map split(/\s+/), values %overload::ops) {

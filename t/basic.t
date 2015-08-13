@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Test::More 0.88;
 
-use Devel::OverloadInfo qw(overload_info);
+use Devel::OverloadInfo qw(overload_info is_overloaded);
 
 sub MyModule::negate { -$_[0] }
 
@@ -51,6 +51,14 @@ BEGIN { $num_sub = sub { 0 } };
         NoOverload;
 
     sub wibble {}
+}
+
+for my $class (qw(BaseClass ChildClass EmptyOverload InheritedOnly)) {
+    ok is_overloaded($class), "$class is overloaded";
+}
+
+for my $class (qw(NoOverload)) {
+    ok !is_overloaded($class), "$class is not overloaded";
 }
 
 my $boi = overload_info('BaseClass');
