@@ -117,4 +117,12 @@ sub overload_info {
     return \%overloaded;
 }
 
+=head1 CAVEATS
+
+Whether the C<fallback> key exists when it has its default value of
+C<undef> varies between perl versions: Before 5.18 it's there, in
+later versions it's not.
+
+=cut
+
 1;

@@ -1,6 +1,7 @@
 Revision history for Devel-OverloadInfo
 
 {{$NEXT}}
+  - Document that existence of undef 'fallback' varies between perl versions
 
 0.003     2015-08-12 19:35:45+01:00 Europe/London
   - Return an empty hash instead of undef for classes with no overloads
