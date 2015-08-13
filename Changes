@@ -1,6 +1,8 @@
 Revision history for Devel-OverloadInfo
 
 {{$NEXT}}
+
+0.004     2015-08-13 17:35:32+01:00 Europe/London
   - Document that existence of undef 'fallback' varies between perl versions
   - Add tests for empty, inherited-only and no overloading
   - Add is_overloaded() function
