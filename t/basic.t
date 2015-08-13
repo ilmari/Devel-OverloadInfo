@@ -34,6 +34,25 @@ BEGIN { $num_sub = sub { 0 } };
     sub stringify { "foo" }
 }
 
+{
+    package # hide from PAUSE
+        EmptyOverload;
+    use overload;
+}
+
+{
+    package # hide from PAUSE
+        InheritedOnly;
+    use parent -norequire => 'BaseClass';
+}
+
+{
+    package # hide from PAUSE
+        NoOverload;
+
+    sub wibble {}
+}
+
 my $boi = overload_info('BaseClass');
 
 # Whether undef fallback exists varies between perl versions
@@ -99,5 +118,25 @@ is_deeply $coi,
         },
     },
     "ChildClass overload info" or note explain $coi;
+
+is_deeply overload_info('InheritedOnly'),
+    overload_info('BaseClass'),
+    'InheritedOnly has same overloads as BaseClass';
+
+is_deeply overload_info('NoOverload'), {},
+    'NoOverload has no overloads';
+
+my $eoi = overload_info('EmptyOverload');
+
+# Whether undef fallback exists varies between perl versions
+if (my $fallback = delete $eoi->{fallback}) {
+    is_deeply $fallback, {
+        class => 'EmptyOverload',
+        value => undef,
+    }, 'EmptyOverload fallback is undef';
+}
+
+is_deeply $eoi, {},
+    'EmptyOverload has no overloads';
 
 done_testing;
