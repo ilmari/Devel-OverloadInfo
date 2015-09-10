@@ -7,7 +7,7 @@ package Devel::OverloadInfo;
 Devel::OverloadInfo returns information about L<overloaded|overload>
 operators for a given class (or object), including where in the
 inheritance hierarchy the overloads are declared and where the code
-implementing it is.
+implementing them is.
 
 =cut
 
