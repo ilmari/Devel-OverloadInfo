@@ -20,7 +20,7 @@ use Package::Stash 0.14;
 use MRO::Compat;
 
 use Exporter 5.57 qw(import);
-our @EXPORT_OK = qw(overload_info is_overloaded);
+our @EXPORT_OK = qw(overload_info overload_op_info is_overloaded);
 
 sub stash_with_symbol {
     my ($class, $symbol) = @_;
@@ -60,14 +60,18 @@ sub is_overloaded {
     );
 }
 
-=func overload_info
+=func overload_op_info
 
-    my $info = overload_info($class_or_object);
+    my $info = overload_op_info($class_or_object, $op);
 
-Returns a hash reference with information about all the overloaded
-operators of the argument, which can be either a class name or a blessed
-object. The keys are the overloaded operators, as specified in
-C<%overload::ops> (see L<overload/Overloadable Operations>).
+Returns a hash reference with information about the specified
+overloaded operator of the named class or blessed object.
+
+Returns C<undef> if the operator is not overloaded.
+
+See L<overload/Overloadable Operations> for the available operators.
+
+The keys in the returned hash are as follows:
 
 =over
 
@@ -103,6 +107,52 @@ For the special C<fallback> key, the value it was given in C<class>.
 
 =cut
 
+sub overload_op_info {
+    my ($class, $op) = @_;
+    $class = blessed($class) || $class;
+
+    return undef unless is_overloaded($class);
+    my $op_method = $op eq 'fallback' ? "()" : "($op";
+    my ($stash, $func) = stash_with_symbol($class, "&$op_method")
+        or return undef;
+    my $info = {
+        class => $stash->name,
+    };
+    if ($func == \&overload::nil) {
+        # Named method or fallback, stored in the scalar slot
+        if (my $value_ref = $stash->get_symbol("\$$op_method")) {
+            my $value = $$value_ref;
+            if ($op eq 'fallback') {
+                $info->{value} = $value;
+            } else {
+                $info->{method_name} = $value;
+                if (my ($impl_stash, $impl_func) = stash_with_symbol($class, "&$value")) {
+                    $info->{code_class} = $impl_stash->name;
+                    $info->{code} = $impl_func;
+                }
+            }
+        }
+    } else {
+        $info->{code} = $func;
+    }
+    $info->{code_name} = sub_fullname($info->{code})
+        if exists $info->{code};
+
+    return $info;
+}
+
+=func overload_info
+
+    my $info = overload_info($class_or_object);
+
+Returns a hash reference with information about all the overloaded
+operators of specified class name or blessed object.  The keys are the
+overloaded operators, as specified in C<%overload::ops> (see
+L<overload/Overloadable Operations>), and the values are the hashes
+returned by L</overload_op_info>.
+
+=cut
+
 sub overload_info {
     my $class = blessed($_[0]) || $_[0];
 
@@ -110,31 +160,9 @@ sub overload_info {
 
     my (%overloaded);
     for my $op (map split(/\s+/), values %overload::ops) {
-        my $op_method = $op eq 'fallback' ? "()" : "($op";
-        my ($stash, $func) = stash_with_symbol($class, "&$op_method")
+        my $info = overload_op_info($class, $op)
             or next;
-        my $info = $overloaded{$op} = {
-            class => $stash->name,
-        };
-        if ($func == \&overload::nil) {
-            # Named method or fallback, stored in the scalar slot
-            if (my $value_ref = $stash->get_symbol("\$$op_method")) {
-                my $value = $$value_ref;
-                if ($op eq 'fallback') {
-                    $info->{value} = $value;
-                } else {
-                    $info->{method_name} = $value;
-                    if (my ($impl_stash, $impl_func) = stash_with_symbol($class, "&$value")) {
-                        $info->{code_class} = $impl_stash->name;
-                        $info->{code} = $impl_func;
-                    }
-                }
-            }
-        } else {
-            $info->{code} = $func;
-        }
-        $info->{code_name} = sub_fullname($info->{code})
-            if exists $info->{code};
+        $overloaded{$op} = $info
     }
     return \%overloaded;
 }
