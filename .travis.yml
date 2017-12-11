@@ -12,6 +12,7 @@ perl:
   - "5.10-thr"
   - "5.12"
   - "5.12-thr"
+  # - "5.14" expclicitly with coverage in 'matrix'
   - "5.14-thr"
   - "5.16"
   - "5.16-thr"
@@ -19,7 +20,12 @@ perl:
   - "5.18-thr"
   - "5.20"
   - "5.20-thr"
+  - "5.22"
   - "5.22-thr"
+  - "5.24"
+  - "5.24-thr"
+  # - "5.26" expclicitly with coverage in 'matrix'
+  - "5.26-thr"
   - "dev"
   - "dev-thr"
   - "blead"
@@ -28,7 +34,7 @@ matrix:
   include:
     - perl: 5.14
       env: COVERAGE="coveralls codecov"
-    - perl: 5.22
+    - perl: 5.26
       env: COVERAGE="coveralls codecov"
   allow_failures:
     - perl: blead
