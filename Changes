@@ -1,6 +1,7 @@
 Revision history for Devel-OverloadInfo
 
 {{$NEXT}}
+  - Remove dependency on Sub::Identify
 
 0.005     2018-01-22 00:45:49+00:00 Europe/London
   - Add overload_op_info() function for info about a single op
